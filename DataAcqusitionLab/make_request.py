@@ -6,14 +6,9 @@ from urllib3.exceptions import MaxRetryError
 
 from api_key import key
 import urllib3
-from pprintpp import pprint
 
 file_prefix = 'loctation_'
-
 file_suffix = '.json'
-
-
-
 headers = {
     'Content-Type': 'application/json',
     'token': key,
@@ -32,7 +27,7 @@ try:
         response = http.request('GET', f'{url}{str(j_set)}', headers=headers)
         if response.status == 200:
             data = json.loads(response.data.decode('utf-8'))
-            f = open(f'loctation_{count}.json', 'w')
+            f = open(f'locations_{count}.json', 'w')
             json.dump(data, f)
             f.close()
             count += 1
