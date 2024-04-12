@@ -27,10 +27,10 @@ try:
         response = http.request('GET', f'{url}{str(j_set)}', headers=headers)
         if response.status == 200:
             data = json.loads(response.data.decode('utf-8'))
-            f = open(f'locations_{count}.json', 'w')
-            json.dump(data, f)
-            f.close()
-            count += 1
+            j_obj = json.dumps(data, indent=4)
+            with open(f'locations_{count}.json', 'w') as f:
+                f.write(j_obj)
+                count += 1
         else:
             print(f"Error: Unable to fetch data. Status Code: {response.status}")
 except MaxRetryError as e:
