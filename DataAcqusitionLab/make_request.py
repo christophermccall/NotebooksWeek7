@@ -7,34 +7,51 @@ from urllib3.exceptions import MaxRetryError
 from api_key import key
 import urllib3
 
-file_prefix = 'loctation_'
-file_suffix = '.json'
-headers = {
+# url_in = 'https://www.ncdc.noaa.gov/cdo-web/api/v2/locations/?/locationcategoryid=name&limit=1000&offset='
+# file_prefix_in = 'loctations_'
+# file_suffix_in = '.json'
+# start_stop_step_in =0 ,0 ,0
+# headers_in = {
+#     'Content-Type': 'application/json',
+#     'token': key
+# }
+
+class Settings:
+    def __init__(self, prefix, suffix, start, stop, step):
+        self.s_s_s = start, stop, step
+        self.pre = prefix
+        self.suf = suffix
+        self.j_header = {
     'Content-Type': 'application/json',
-    'token': key,
+    'token': key
 }
-try:
-    retries = Retry(
-        total=10,  # Total number of allowed retries
-        backoff_factor=0.5,  # Factor by which retry delays increase
-        status_forcelist=[500, 502, 503, 504]  # HTTP status codes to retry
-    )
-    http = urllib3.PoolManager(retries=retries)
-    count = 0
-    j_count = 0
-    url = 'https://www.ncdc.noaa.gov/cdo-web/api/v2/locations/?/locationcategoryid=name&limit=1000&offset='
-    for j_set in range(1, 38862, 1000):
-        response = http.request('GET', f'{url}{str(j_set)}', headers=headers)
-        if response.status == 200:
-            data = json.loads(response.data.decode('utf-8'))
-            j_obj = json.dumps(data, indent=4)
-            with open(f'locations_{count}.json', 'w') as f:
-                f.write(j_obj)
-                count += 1
-        else:
-            print(f"Error: Unable to fetch data. Status Code: {response.status}")
-except MaxRetryError as e:
-    print(f"Error: Maximum retries exceeded. {e}")
+
+
+
+def requestor(url, start_stop_step, file_prefix, file_suffix, headers,directory):
+    start, stop, step = start_stop_step
+    try:
+        retries = Retry(
+            total=10,  # Total number of allowed retries
+            backoff_factor=0.5,  # Factor by which retry delays increase
+            status_forcelist=[500, 502, 503, 504]  # HTTP status codes to retry
+        )
+        http = urllib3.PoolManager(retries=retries)
+        count = 0
+        for j_set in range(start, stop, step):
+            response = http.request('GET', f'{url}{str(j_set)}', headers=headers)
+            if response.status == 200:
+                data = json.loads(response.data.decode('utf-8'))
+                j_obj = json.dumps(data, indent=4)
+                with open(f'{directory}/{file_prefix}{count}{file_suffix}', 'w') as f:
+                    f.write(j_obj)
+                    count += 1
+            else:
+                print(f"Error: Unable to fetch data. Status Code: {response.status}")
+    except MaxRetryError as e:
+        print(f"Error: Maximum retries exceeded. {e}")
+
+
 
 
 
