@@ -8,11 +8,6 @@ from api_key import key
 import urllib3
 from pprintpp import pprint
 
-
-
-
-# url = 'https://www.ncdc.noaa.gov/cdo-web/api/v2/locations/?/locationcategoryid=name&limit=1000&offset='
-
 file_prefix = 'loctation_'
 
 file_suffix = '.json'
@@ -30,13 +25,10 @@ try:
         status_forcelist=[500, 502, 503, 504]  # HTTP status codes to retry
     )
     http = urllib3.PoolManager(retries=retries)
-
-    # response = http.request('GET', url, headers=headers)
-    # data = json.loads(response.data.decode('utf-8'))
     count = 0
     j_count = 0
-    url = 'https://www.ncdc.noaa.gov/cdo-web/api/v2/locations/?/locationcategoryid=name&limit=991&offset='
-    for j_set in range(1, 38862, 991):
+    url = 'https://www.ncdc.noaa.gov/cdo-web/api/v2/locations/?/locationcategoryid=name&limit=1000&offset='
+    for j_set in range(1, 38862, 1000):
         response = http.request('GET', f'{url}{str(j_set)}', headers=headers)
         if response.status == 200:
             data = json.loads(response.data.decode('utf-8'))
@@ -48,6 +40,12 @@ try:
             print(f"Error: Unable to fetch data. Status Code: {response.status}")
 except MaxRetryError as e:
     print(f"Error: Maximum retries exceeded. {e}")
+
+
+
+
+
+# url = 'https://www.ncdc.noaa.gov/cdo-web/api/v2/locations/?/locationcategoryid=name&limit=1000&offset='
 
 # f = open(f'loctation_{count}.json', 'w')
 # json.dump(data['results'], f)
@@ -80,7 +78,8 @@ except MaxRetryError as e:
 
 
 
-
+ # response = http.request('GET', url, headers=headers)
+    # data = json.loads(response.data.decode('utf-8'))
 
 
 
