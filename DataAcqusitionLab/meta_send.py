@@ -1,3 +1,3 @@
-from make_request import meta_requestor, Settings
-this_meta = Settings(url=input('Enter base url: '))
-meta_requestor(this_meta.url, this_meta.j_header)
+from make_request import Settings
+this_meta = Settings(url=input('Enter base url: '), headers=Settings().j_header)
+this_meta.meta_requestor()

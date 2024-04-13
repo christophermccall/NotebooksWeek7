@@ -81,59 +81,74 @@ class Settings:
     #         print(f"Error: Maximum retries exceeded. {e}")
 
 
-def meta_requestor(url, headers):
-    #  start, stop, step = start_stop_step
-    try:
-        retries = Retry(
-            total=10,  # Total number of allowed retries
-            backoff_factor=0.5,  # Factor by which retry delays increase
-            status_forcelist=[500, 502, 503, 504]  # HTTP status codes to retry
-        )
-        http = urllib3.PoolManager(retries=retries)
-        response = http.request('GET', f'{url}&limit=1&offset=25', headers=headers)
-        if response.status == 200:
-            data = json.loads(response.data.decode('utf-8'))
-            pprint(data['metadata'])
-            return data['metadata']
-        else:
-            print(f"Error: Unable to fetch data. Status Code: {response.status}")
-    except MaxRetryError as e:
-        print(f"Error: Maximum retries exceeded. {e}")
+    def meta_requestor(self):
+        #  start, stop, step = start_stop_step
+        try:
+            retries = Retry(
+                total=10,  # Total number of allowed retries
+                backoff_factor=0.5,  # Factor by which retry delays increase
+                status_forcelist=[500, 502, 503, 504]  # HTTP status codes to retry
+            )
+            http = urllib3.PoolManager(retries=retries)
+            response = http.request('GET', f'{self.url}&limit=1&offset=1', headers=self.header)
+            if response.status == 200:
+                data = json.loads(response.data.decode('utf-8'))
+                meta = data['metadata']
+                print('{')
+                for key,value in meta['resultset'].items():
+                    print(f"    '{key}': {value}")
+                print('}')
+            else:
+                print(f"Error: Unable to fetch data. Status Code: {response.status} \n")
+                print('trying secondary method...\n')
+                http = urllib3.PoolManager(retries=retries)
+                response = http.request('GET', f'{self.url}', headers=self.header)
+                if response.status == 200:
+                    data = json.loads(response.data.decode('utf-8'))
+                    print('Success!\n')
+                    meta = data['metadata']
+                    print('{')
+                    for key, value in meta['resultset'].items():
+                        print(f"    '{key}': {value}")
+                    print('}')
+
+        except MaxRetryError as e:
+            print(f"Error: Maximum retries exceeded. {e}")
 
 
 
 # come back and finish this later
 # need to iterate through url
 # locate limit= (insert new limit here)
-def auto_ss_requestor(url, headers, file_prefix, file_suffix, directory):
-    ruleset = meta_requestor(url, headers)
-    s_s_s = ()
-    for key in ruleset.values():
-        for values in key.values():
-            s_s_s += values,
-    (start, stop, step) = s_s_s #new limit = stop
-                                # new offset will be ub
-    step = 1000
-    try:
-        retries = Retry(
-            total=10,  # Total number of allowed retries
-            backoff_factor=0.5,  # Factor by which retry delays increase
-            status_forcelist=[500, 502, 503, 504]  # HTTP status codes to retry
-        )
-        http = urllib3.PoolManager(retries=retries)
-        count = 0
-        for j_set in range(start, stop, step):
-            response = http.request('GET', f'{url}&limit={step}&offset={str(j_set)}', headers=headers)
-            if response.status == 200:
-                data = json.loads(response.data.decode('utf-8'))
-                j_obj = json.dumps(data, indent=4)
-                with open(f'{directory}/{file_prefix}{count}{file_suffix}', 'w') as f:
-                    f.write(j_obj)
-                    count += 1
-            else:
-                print(f"Error: Unable to fetch data. Status Code: {response.status}")
-    except MaxRetryError as e:
-        print(f"Error: Maximum retries exceeded. {e}")
+# def auto_ss_requestor(url, headers, file_prefix, file_suffix, directory):
+#     ruleset = meta_requestor(url, headers)
+#     s_s_s = ()
+#     for key in ruleset.values():
+#         for values in key.values():
+#             s_s_s += values,
+#     (start, stop, step) = s_s_s #new limit = stop
+#                                 # new offset will be ub
+#     step = 1000
+#     try:
+#         retries = Retry(
+#             total=10,  # Total number of allowed retries
+#             backoff_factor=0.5,  # Factor by which retry delays increase
+#             status_forcelist=[500, 502, 503, 504]  # HTTP status codes to retry
+#         )
+#         http = urllib3.PoolManager(retries=retries)
+#         count = 0
+#         for j_set in range(start, stop, step):
+#             response = http.request('GET', f'{url}&limit={step}&offset={str(j_set)}', headers=headers)
+#             if response.status == 200:
+#                 data = json.loads(response.data.decode('utf-8'))
+#                 j_obj = json.dumps(data, indent=4)
+#                 with open(f'{directory}/{file_prefix}{count}{file_suffix}', 'w') as f:
+#                     f.write(j_obj)
+#                     count += 1
+#             else:
+#                 print(f"Error: Unable to fetch data. Status Code: {response.status}")
+#     except MaxRetryError as e:
+#         print(f"Error: Maximum retries exceeded. {e}")
 
 
 
