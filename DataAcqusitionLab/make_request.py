@@ -56,6 +56,36 @@ class Settings:
             print(f"Error: Maximum retries exceeded. {e}")
 
 
+    def requestor_w_date(self):
+
+        start, stop, step = self.s_s_s
+        try:
+            retries = Retry(
+                total=10,  # Total number of allowed retries
+                backoff_factor=0.5,  # Factor by which retry delays increase
+                status_forcelist=[500, 502, 503, 504]  # HTTP status codes to retry
+            )
+            http = urllib3.PoolManager(retries=retries)
+            count = 0
+            start_date = int(input('between(start date): \n'))
+            end_date = int(input('and(end date): \n'))
+            limit = int(input('stop at:(year)'))
+            while start_date <= limit:
+                response = http.request('GET', f'{self.url}&startdate={start_date}-01-01&enddate={end_date}-01-01&limit=1000&offset=1', headers=self.header)
+                if response.status == 200:
+                    data = json.loads(response.data.decode('utf-8'))
+                    j_obj = json.dumps(data, indent=4)
+                    with open(f'{self.directory}/{self.pre}{start_date}_to_{end_date}{self.suf}', 'w') as f:
+                        f.write(j_obj)
+                        count += 1
+                        start_date += 10
+                        end_date += 10
+                else:
+                    print(f"Error: Unable to fetch data. Status Code: {response.status}")
+        except MaxRetryError as e:
+            print(f"Error: Maximum retries exceeded. {e}")
+
+
     # def requestor(self,url, headers, start_stop_step, file_prefix, file_suffix, directory):
     #
     #     start, stop, step = start_stop_step
