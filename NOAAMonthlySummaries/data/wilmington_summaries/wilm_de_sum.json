@@ -1,0 +1,11 @@
+{
+    "elevation": 22.4,
+    "mindate": "1931-04-16",
+    "maxdate": "2024-04-12",
+    "latitude": 39.67444,
+    "name": "WILMINGTON AIRPORT, DE US",
+    "datacoverage": 1,
+    "id": "GHCND:USW00013781",
+    "elevationUnit": "METERS",
+    "longitude": -75.60566
+}

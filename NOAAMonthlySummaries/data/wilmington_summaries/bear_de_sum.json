@@ -1,0 +1,11 @@
+{
+    "elevation": 24.4,
+    "mindate": "2003-02-01",
+    "maxdate": "2012-12-02",
+    "latitude": 39.5917,
+    "name": "BEAR 2 SW, DE US",
+    "datacoverage": 1,
+    "id": "GHCND:USC00071200",
+    "elevationUnit": "METERS",
+    "longitude": -75.7325
+}
